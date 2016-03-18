@@ -4,9 +4,7 @@
    | For more configuration infromation and examples see the Jakarta Log4j
    | owebsite: http://jakarta.apache.org/log4j
  -->
-<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/" threshold="all" debug="false"
-                     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                     xsi:schemaLocation="http://jakarta.apache.org/log4j/ ">
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/" threshold="all" debug="false" >
     <appender name="FILE" class="org.apache.log4j.DailyRollingFileAppender">
         <param name="File" value="../logs/rss.log"/>
         <param name="DatePattern" value="'.'yyyyMMdd"/>
@@ -27,48 +25,48 @@
     </appender>
 
     <root>
-        <level value="ERROR"/>
+        <level value ="INFO"/>
         <appender-ref ref="FILE"/>
         <appender-ref ref="CONSOLE"/>
     </root>
 
 </log4j:configuration>
 
-        <!--
+<!--
 
-           Log4J Configuration Quick Reference:
-           ====================================
-
-
-           Priority order is DEBUG < INFO < WARN < ERROR < FATAL
+   Log4J Configuration Quick Reference:
+   ====================================
 
 
-           PatternLayout conversion characters:
+   Priority order is DEBUG < INFO < WARN < ERROR < FATAL
 
-            %c   Category of the logging event
-            %C   Fully qualified class name of the caller
-            %d   Date of the logging event  (example: %d{HH:mm:ss,SSS} )
-            %F   File name where the logging request was issued (caution: extremely slow)
-            %l   Location information of the caller (caution: extremely slow)
-            %L   Line number from where the logging request was issued (caution: extremely slow)
-            %m   Application-supplied message
-            %M   Method name from where the logging request was issued (caution: extremely slow)
-            %n   Line separator
-            %p   Priority of the logging event
-            %r   Number of milliseconds since the start of the application
-            %t   Name of the thread that generated the logging event
-            %x   Nested diagnotic context associated with the thread
-            %%   A single percent sign
 
-           Format modifiers examples:
+   PatternLayout conversion characters:
 
-            %20c     Left pad with spaces if category is less than 20 characters long
-            %-20c    Right pad with spaces if category is less than 20 characters long
-            %.30c    Truncate from the beginning if category is more than 30 chars long
-            %20.30c  Left pad 20 chars + truncate from beginning if more than 30 chars
-            %-20.30c Right pad 20 chars + truncate from beginning if more than 30 chars
+    %c   Category of the logging event
+    %C   Fully qualified class name of the caller
+    %d   Date of the logging event  (example: %d{HH:mm:ss,SSS} )
+    %F   File name where the logging request was issued (caution: extremely slow)
+    %l   Location information of the caller (caution: extremely slow)
+    %L   Line number from where the logging request was issued (caution: extremely slow)
+    %m   Application-supplied message
+    %M   Method name from where the logging request was issued (caution: extremely slow)
+    %n   Line separator
+    %p   Priority of the logging event
+    %r   Number of milliseconds since the start of the application
+    %t   Name of the thread that generated the logging event
+    %x   Nested diagnotic context associated with the thread
+    %%   A single percent sign
 
-           Examples:  "%r [%t] %-5p %c %x - %m\n"
-                      "%-6r [%15.15t] %-5p %30.30c %x - %m\n"
+   Format modifiers examples:
 
-        -->
+    %20c     Left pad with spaces if category is less than 20 characters long
+    %-20c    Right pad with spaces if category is less than 20 characters long
+    %.30c    Truncate from the beginning if category is more than 30 chars long
+    %20.30c  Left pad 20 chars + truncate from beginning if more than 30 chars
+    %-20.30c Right pad 20 chars + truncate from beginning if more than 30 chars
+
+   Examples:  "%r [%t] %-5p %c %x - %m\n"
+              "%-6r [%15.15t] %-5p %30.30c %x - %m\n"
+
+-->

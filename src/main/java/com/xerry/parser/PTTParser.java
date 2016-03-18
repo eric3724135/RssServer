@@ -1,6 +1,7 @@
 package com.xerry.parser;
 
 
+import com.xerry.cache.Cache;
 import com.xerry.constent.Constant;
 import com.xerry.model.FeedMsg;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -29,7 +30,7 @@ import java.util.*;
 public class PTTParser {
     private static final Logger log = Logger.getLogger(PTTParser.class);
 
-    public List<FeedMsg> getNews(String board) throws KeyManagementException, NoSuchAlgorithmException {
+    public void getNews(String board) throws KeyManagementException, NoSuchAlgorithmException {
         List<FeedMsg> result = new ArrayList<>();
         String url = Constant.BASE_URL + board + Constant.POSTFIX_URL;
         enableSSL();
@@ -57,7 +58,7 @@ public class PTTParser {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return result;
+        Cache.getPttCache().put(board, result);
     }
 
 
@@ -88,8 +89,8 @@ public class PTTParser {
     public static void main(String[] args) {
         PTTParser parser = new PTTParser();
         try {
-            List<FeedMsg> result = parser.getNews("Stock");
-            log.info(result.size());
+            parser.getNews("Stock");
+            log.info(Cache.getPttCache().get("Stock").size());
         } catch (KeyManagementException e) {
             e.printStackTrace();
         } catch (NoSuchAlgorithmException e) {
