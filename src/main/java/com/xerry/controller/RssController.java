@@ -27,7 +27,7 @@ public class RssController {
     @Autowired
     private PTTParser pttParser;
 
-    @RequestMapping(value = "/rss/{board}", method = RequestMethod.GET)
+    @RequestMapping(value = "/rss/ptt/{board}", method = RequestMethod.GET)
     public ModelAndView getFeedInRss(@PathVariable("board") String board) {
         List<FeedMsg> items = new ArrayList<FeedMsg>();
         try {
