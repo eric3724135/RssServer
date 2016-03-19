@@ -10,6 +10,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.springframework.stereotype.Service;
 
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.SSLContext;
@@ -27,30 +28,55 @@ import java.util.*;
 /**
  * Created by eric on 2016/3/18.
  */
+@Service
 public class PTTParser {
     private static final Logger log = Logger.getLogger(PTTParser.class);
 
+    private List<FeedMsg> result = new ArrayList<>();
+
     public void getNews(String board) throws KeyManagementException, NoSuchAlgorithmException {
-        List<FeedMsg> result = new ArrayList<>();
-        String url = Constant.BASE_URL + board + Constant.POSTFIX_URL;
+        result = new ArrayList<>();
+        String url = Constant.BASE_URL + Constant.BBS + board + Constant.POSTFIX_URL;
+        while (result.size() < 50) {
+            url = this.parse(board, url);
+        }
+        Cache.getPttCache().put(board, result);
+    }
+
+
+    private String parse(String board, String url) throws KeyManagementException, NoSuchAlgorithmException {
+        String nextPage = "";
         enableSSL();
         try {
             Document doc = Jsoup.connect(url).get();
             Elements lis = doc.select("#main-container > div.r-list-container.bbs-screen > div");
-
             Collections.reverse(lis);
             for (Element li : lis) {
                 try {
                     FeedMsg msg = new FeedMsg();
-                    Element title = li.child(2).child(0);
-                    msg.setTitle(title.text());
-                    msg.setLink(title.attr("href"));
-                    msg.setGuid(title.attr("href"));
-                    msg.setDescription(title.text());
-                    msg.setPubDate(new Date());
-                    Element author = li.child(3).child(1);
-                    msg.setAuthor(author.text());
-                    result.add(msg);
+                    if (li.children() != null) {
+                        Element check = li.child(2);
+                        if (check.children() != null) {
+                            Element title = check.child(0);
+                            msg.setTitle(title.text());
+                            msg.setLink(title.attr("href"));
+                            msg.setGuid(title.attr("href"));
+                            msg.setDescription(title.text());
+                            msg.setPubDate(new Date());
+                            Element author = li.child(3).child(1);
+                            msg.setAuthor(author.text());
+                            result.add(msg);
+                        }
+                    }
+                } catch (Exception e) {
+                    log.error(ExceptionUtils.getStackTrace(e));
+                }
+            }
+            //get previous page
+            Elements actions = doc.select("#action-bar-container > div.action-bar > div.btn-group.pull-right > a:eq(1)");
+            for (Element li : actions) {
+                try {
+                    nextPage = Constant.BASE_URL + li.attr("href");
                 } catch (Exception e) {
                     log.error(ExceptionUtils.getStackTrace(e));
                 }
@@ -58,7 +84,7 @@ public class PTTParser {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        Cache.getPttCache().put(board, result);
+        return nextPage;
     }
 
 
