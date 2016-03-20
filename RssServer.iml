@@ -15,6 +15,9 @@
         </sourceRoots>
       </configuration>
     </facet>
+    <facet type="Spring" name="Spring">
+      <configuration />
+    </facet>
   </component>
   <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_1_8" inherit-compiler-output="false">
     <output url="file://$MODULE_DIR$/target/classes" />
@@ -36,7 +39,6 @@
     <orderEntry type="library" name="Maven: org.springframework:spring-context:4.2.4.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: org.springframework:spring-webmvc:4.2.4.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: org.springframework:spring-expression:4.2.4.RELEASE" level="project" />
-    <orderEntry type="library" name="Maven: com.xerry:rss_core:1.0-SNAPSHOT" level="project" />
     <orderEntry type="library" name="Maven: com.rometools:rome:1.5.1" level="project" />
     <orderEntry type="library" name="Maven: com.rometools:rome-utils:1.5.1" level="project" />
     <orderEntry type="library" name="Maven: org.jdom:jdom:2.0.2" level="project" />

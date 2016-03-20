@@ -29,6 +29,7 @@ public class RssController {
 
     @RequestMapping(value = "/rss/ptt/{board}", method = RequestMethod.GET)
     public ModelAndView getFeedInRss(@PathVariable("board") String board) {
+        log.info("access : /rss/ptt/" + board + "Time:" + new Date());
         List<FeedMsg> items = new ArrayList<FeedMsg>();
         try {
             pttParser.getNews(board);

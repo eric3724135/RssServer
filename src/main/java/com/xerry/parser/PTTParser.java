@@ -10,6 +10,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.springframework.expression.Expression;
 import org.springframework.stereotype.Service;
 
 import javax.net.ssl.KeyManager;
@@ -48,24 +49,30 @@ public class PTTParser {
         String nextPage = "";
         enableSSL();
         try {
-            Document doc = Jsoup.connect(url).get();
+            Document doc = Jsoup.connect(url).cookie("over18", "1").get();
             Elements lis = doc.select("#main-container > div.r-list-container.bbs-screen > div");
             Collections.reverse(lis);
             for (Element li : lis) {
                 try {
                     FeedMsg msg = new FeedMsg();
-                    if (li.children() != null) {
+                    if (li.childNodes().size() > 0) {
                         Element check = li.child(2);
-                        if (check.children() != null) {
-                            Element title = check.child(0);
-                            msg.setTitle(title.text());
-                            msg.setLink(title.attr("href"));
-                            msg.setGuid(title.attr("href"));
-                            msg.setDescription(title.text());
-                            msg.setPubDate(new Date());
-                            Element author = li.child(3).child(1);
-                            msg.setAuthor(author.text());
-                            result.add(msg);
+                        /*childNode ==1 => article is remove*/
+                        if (check.childNodes().size() > 1) {
+                            try {
+                                Element title = check.child(0);
+                                msg.setTitle(title.text());
+                                msg.setLink(Constant.BASE_URL + title.attr("href"));
+                                msg.setGuid(Constant.BASE_URL + title.attr("href"));
+                                msg.setDescription(title.text());
+                                msg.setPubDate(new Date());
+                                Element author = li.child(3).child(1);
+                                msg.setAuthor(author.text());
+                                result.add(msg);
+                            } catch (Exception e) {
+                                log.error(e.getMessage());
+                            }
+
                         }
                     }
                 } catch (Exception e) {
