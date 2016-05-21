@@ -4,6 +4,7 @@ import com.xerry.cache.Cache;
 import com.xerry.model.FeedMsg;
 import com.xerry.model.RegInfo;
 import com.xerry.parser.PTTParser;
+import com.xerry.schedule.TimerInitial;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.log4j.Logger;
@@ -49,6 +50,9 @@ public class RssController {
         if (StringUtils.isBlank(board)) {
             throw new NullPointerException("unknown board ");
         }
+        if (StringUtils.isBlank(mail)) {
+            throw new NullPointerException("unknown mail ");
+        }
         Cache.getBroadSet().add(board);
         Map<String, RegInfo> boardMap = Cache.getRegMap().get(board);
         if (boardMap == null) {
@@ -57,6 +61,7 @@ public class RssController {
         RegInfo info = new RegInfo(board, title, author, mail);
         boardMap.put(info.getKey(), info);
         Cache.getRegMap().put(board, boardMap);
+        TimerInitial.getInstance();
 
     }
 

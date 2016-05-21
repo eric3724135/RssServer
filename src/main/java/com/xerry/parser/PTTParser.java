@@ -29,18 +29,27 @@ import java.util.*;
 /**
  * Created by eric on 2016/3/18.
  */
-@Service
 public class PTTParser {
     private static final Logger log = Logger.getLogger(PTTParser.class);
 
     private List<FeedMsg> result = new ArrayList<>();
 
+    private static PTTParser ourInstance = new PTTParser();
+
+    public static PTTParser getInstance() {
+        return ourInstance;
+    }
+
+    private PTTParser() {
+    }
+
+
     public void getNews(String board) throws KeyManagementException, NoSuchAlgorithmException {
         result = new ArrayList<>();
         String url = Constant.BASE_URL + Constant.BBS + board + Constant.POSTFIX_URL;
-       // while (result.size() < 50) {
-            url = this.parse(board, url);
-       // }
+        // while (result.size() < 50) {
+        url = this.parse(board, url);
+        // }
         Cache.getPttCache().put(board, result);
     }
 
@@ -52,7 +61,15 @@ public class PTTParser {
             Document doc = Jsoup.connect(url).cookie("over18", "1").get();
             Elements lis = doc.select("#main-container > div.r-list-container.bbs-screen > div");
             Collections.reverse(lis);
+            boolean top = true;
             for (Element li : lis) {
+                if (li.attributes().get("class").equals("r-list-sep")) {
+                    top = false;
+                    continue;
+                }
+                if (top) {
+                    continue;
+                }
                 try {
                     FeedMsg msg = new FeedMsg();
                     if (li.childNodes().size() > 0) {

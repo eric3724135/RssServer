@@ -27,9 +27,13 @@ public class NewsHandler {
     public void handleAllNews() {
         for (String board : Cache.getRegMap().keySet()) {
             List<FeedMsg> boardNews = Cache.getPttCache().get(board);
+            if (boardNews == null) {
+                log.warn("Cache.getPttCache() " + board + " is NULL");
+                return;
+            }
             for (RegInfo info : Cache.getRegMap().get(board).values()) {
                 this.handleEachNews(info, boardNews);
-                info.setLastUpdateTime(boardNews.get(0).getPubDate());
+                info.setLastTitle(boardNews.get(0).getTitle());
                 Cache.getRegMap().get(board).put(info.getKey(), info);
             }
         }
@@ -38,7 +42,9 @@ public class NewsHandler {
     private void handleEachNews(RegInfo info, List<FeedMsg> msgs) {
 //        for(for)
         for (FeedMsg feedMsg : msgs) {
-            if (feedMsg.getPubDate().after(info.getLastUpdateTime())) {
+            if (feedMsg.getTitle().equals(info.getLastTitle())) {
+                return;
+            } else {
                 if (StringUtils.isNotBlank(info.getAuthor())) {
                     if (feedMsg.getAuthor().equals(info.getAuthor())) {
                         MailHandler.getInstance().send(info, feedMsg);

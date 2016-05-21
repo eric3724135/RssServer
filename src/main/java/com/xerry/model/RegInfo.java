@@ -13,6 +13,7 @@ public class RegInfo {
     private String url;
     private String mail;
     private Date lastUpdateTime;
+    private String lastTitle;
 
 
     public RegInfo(String board, String title, String author, String mail) {
@@ -20,6 +21,8 @@ public class RegInfo {
         this.title = title;
         this.author = author;
         this.mail = mail;
+        this.lastUpdateTime = new Date();
+        this.lastTitle = "";
     }
 
     public String getKey() {
@@ -73,5 +76,13 @@ public class RegInfo {
 
     public void setLastUpdateTime(Date lastUpdateTime) {
         this.lastUpdateTime = lastUpdateTime;
+    }
+
+    public String getLastTitle() {
+        return lastTitle;
+    }
+
+    public void setLastTitle(String lastTitle) {
+        this.lastTitle = lastTitle;
     }
 }

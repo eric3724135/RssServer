@@ -59,7 +59,7 @@ public class MailHandler {
             message.setFrom(new InternetAddress(username));
             message.setRecipients(Message.RecipientType.TO,
                     InternetAddress.parse(info.getMail()));
-            message.setSubject("[" + msg + "]" + msg.getTitle());
+            message.setSubject("[" + msg.getAuthor() + "]" + msg.getTitle());
             message.setText("Notification,"
                     + "\n\n" + msg.getLink());
 
