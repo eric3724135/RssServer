@@ -38,9 +38,9 @@ public class PTTParser {
     public void getNews(String board) throws KeyManagementException, NoSuchAlgorithmException {
         result = new ArrayList<>();
         String url = Constant.BASE_URL + Constant.BBS + board + Constant.POSTFIX_URL;
-        while (result.size() < 50) {
+       // while (result.size() < 50) {
             url = this.parse(board, url);
-        }
+       // }
         Cache.getPttCache().put(board, result);
     }
 
