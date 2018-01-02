@@ -4,19 +4,20 @@ package com.xerry.parser;
 import com.xerry.cache.Cache;
 import com.xerry.constent.Constant;
 import com.xerry.model.FeedMsg;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.log4j.Logger;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import org.springframework.expression.Expression;
 import org.springframework.stereotype.Service;
 
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
+import javax.transaction.Transactional;
 import java.io.IOException;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
@@ -27,7 +28,7 @@ import java.text.ParseException;
 import java.util.*;
 
 /**
- * Created by eric on 2016/3/18.
+ * @author eric on 2016/3/18.
  */
 @Service
 public class PTTParser {
@@ -36,16 +37,37 @@ public class PTTParser {
     private List<FeedMsg> result = new ArrayList<>();
 
     public void getNews(String board) throws KeyManagementException, NoSuchAlgorithmException {
+        log.info("PTTParser getNews board :" + board);
         result = new ArrayList<>();
         String url = Constant.BASE_URL + Constant.BBS + board + Constant.POSTFIX_URL;
-        while (result.size() < 50) {
-            url = this.parse(board, url);
+        boolean skipTitle = true;
+        while (result.size() < Constant.CACHE_SIZE) {
+            url = this.parse(board, url, skipTitle);
+            skipTitle = false;
         }
-        Cache.getPttCache().put(board, result);
+        filterNews(board, result);
+//        Cache.getPttCache().put(board, result);
+    }
+
+    private void filterNews(String board, List<FeedMsg> news) {
+        List<FeedMsg> cacheList = Cache.getPttCache().get(board);
+        if (cacheList == null) {
+            cacheList = news;
+        }
+        FeedMsg newestMsg = cacheList.get(cacheList.size() - 1);
+        for (int i = 0; i < news.size(); i++) {
+            if (StringUtils.equals(news.get(i).getLink(), newestMsg.getLink())) {
+                news = news.subList(i, news.size() - 1);
+            }
+        }
+
+        if (cacheList.addAll(news)) {
+            Cache.getPttCache().put(board, cacheList);
+        }
     }
 
 
-    private String parse(String board, String url) throws KeyManagementException, NoSuchAlgorithmException {
+    private String parse(String board, String url, boolean skipTitle) throws KeyManagementException, NoSuchAlgorithmException {
         String nextPage = "";
         enableSSL();
         try {
@@ -55,6 +77,12 @@ public class PTTParser {
             for (Element li : lis) {
                 try {
                     FeedMsg msg = new FeedMsg();
+                    if (skipTitle) {
+                        if (li.hasClass("r-list-sep")) {
+                            skipTitle = false;
+                        }
+                        continue;
+                    }
                     if (li.childNodes().size() > 0) {
                         Element check = li.child(2);
                         /*childNode ==1 => article is remove*/
@@ -124,9 +152,7 @@ public class PTTParser {
         try {
             parser.getNews("Stock");
             log.info(Cache.getPttCache().get("Stock").size());
-        } catch (KeyManagementException e) {
-            e.printStackTrace();
-        } catch (NoSuchAlgorithmException e) {
+        } catch (KeyManagementException | NoSuchAlgorithmException e) {
             e.printStackTrace();
         }
     }

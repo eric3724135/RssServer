@@ -10,6 +10,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.security.KeyManagementException;
@@ -19,7 +20,7 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * Created by eric on 2016/3/18.
+ * @author eric on 2016/3/18.
  */
 @Controller
 public class RssController {
@@ -42,5 +43,11 @@ public class RssController {
         mav.addObject("feedContent", Cache.getPttCache().get(board));
 
         return mav;
+    }
+
+    @RequestMapping(value = "/signup/{board}", method = RequestMethod.GET)
+    @ResponseBody
+    public void signup(@PathVariable("board") String board) {
+        Cache.getBoardCache().add(board);
     }
 }
